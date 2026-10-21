@@ -10,6 +10,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 
 from .api import UProxApi, UProxApiError, UProxInvalidAuth
 from .const import CONF_PANEL_SERIAL, DOMAIN
+from .message_log import UProxMessageLogger
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,12 @@ class UProxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
-                api = UProxApi(self.hass, user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+                api = UProxApi(
+                    self.hass,
+                    user_input[CONF_USERNAME],
+                    user_input[CONF_PASSWORD],
+                    UProxMessageLogger(self.hass),
+                )
                 await api.async_login()
                 panels = await api.async_get_panels()
             except UProxInvalidAuth as err:
