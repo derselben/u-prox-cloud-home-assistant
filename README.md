@@ -11,6 +11,7 @@ A custom Home Assistant integration for monitoring U-Prox Cloud hubs and their c
 - Expose hub online, mains power, tamper, SIM, and Wi-Fi status.
 - Expose hub battery and available cellular/Wi-Fi signal measurements.
 - Expose accessory state, temperature, battery, and signal measurements when provided by the panel.
+- Monitor each partition's Disarmed, Armed Away, or Armed Home state.
 - Optionally record redacted incoming and outgoing WebSocket messages for troubleshooting.
 
 The integration is read-only: it opens a panel `Setup` session and sends the session keepalive, but does not issue arm/disarm, relay, or configuration-change commands.
@@ -44,6 +45,8 @@ Each configured hub has diagnostic entities for:
 - Hub battery and cellular/Wi-Fi signal levels when available.
 
 Reported sensors expose state, temperature (when available), battery percentage, and signal strength in dBm. Key fobs expose state, battery, and signal. Other component types are currently represented by diagnostic state entities. Component updates are matched by serial or index to avoid assigning one accessory's measurements to another.
+
+Each reported group also creates a read-only `alarm_control_panel` entity on the hub, named for its partition. Cloud states `disarmed`, `armedAway`, and `armedStay` map to Home Assistant's Disarmed, Armed Away, and Armed Home states. Timestamp-only updates preserve the previous state. Unrecognized or ambiguous states are shown as unknown. Arming and disarming commands are not implemented.
 
 ## Message logging
 

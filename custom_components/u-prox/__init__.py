@@ -12,7 +12,12 @@ from .const import CONF_MESSAGE_LOGGING, DOMAIN
 from .coordinator import UProxCoordinator
 from .message_log import UProxMessageLogger
 
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.SWITCH]
+PLATFORMS = [
+    Platform.SENSOR,
+    Platform.BINARY_SENSOR,
+    Platform.SWITCH,
+    Platform.ALARM_CONTROL_PANEL,
+]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
