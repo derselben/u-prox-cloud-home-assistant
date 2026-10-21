@@ -11,12 +11,14 @@ from typing import Any
 import aiohttp
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import Event, HomeAssistant, callback
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import UProxApi, UProxApiError
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+_MESSAGE_TIMEOUT_SECONDS = 180
+_RECONNECT_DELAY_SECONDS = 5
 
 
 class UProxCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -72,19 +74,25 @@ class UProxCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             try:
                 websocket = self._websocket
                 if websocket is None:
-                    return
+                    await self._async_reopen_panel_session()
+                    websocket = self._websocket
+                    if websocket is None:
+                        return
                 while websocket is self._websocket:
                     refresh_in = self.api.token_refresh_in
+                    receive_timeout = (
+                        _MESSAGE_TIMEOUT_SECONDS
+                        if refresh_in is None
+                        else min(_MESSAGE_TIMEOUT_SECONDS, max(refresh_in, 0.1))
+                    )
                     try:
-                        receive = websocket.receive()
-                        message = (
-                            await receive
-                            if refresh_in is None
-                            else await asyncio.wait_for(receive, timeout=max(refresh_in, 0.1))
+                        message = await asyncio.wait_for(
+                            websocket.receive(), timeout=receive_timeout
                         )
                     except TimeoutError:
-                        if self.api.token_refresh_in is None:
-                            continue
+                        refresh_in = self.api.token_refresh_in
+                        if refresh_in is None or refresh_in > 0:
+                            raise UProxApiError("No WebSocket messages for 180 seconds")
                         _LOGGER.debug("Refreshing U-Prox cloud session before token expiry")
                         await self._async_reopen_panel_session()
                         websocket = self._websocket
@@ -119,13 +127,11 @@ class UProxCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             if self._listener is None or self._serial is None:
                 return
-            await asyncio.sleep(5)
-            try:
-                await self._async_reopen_panel_session()
-            except asyncio.CancelledError:
-                raise
-            except (UProxApiError, aiohttp.ClientError, TimeoutError) as err:
-                _LOGGER.warning("U-Prox panel reconnect failed (%s)", type(err).__name__)
+            self.async_set_update_error(UpdateFailed("U-Prox cloud session disconnected"))
+            if self._websocket:
+                await self._websocket.close()
+                self._websocket = None
+            await asyncio.sleep(_RECONNECT_DELAY_SECONDS)
 
     async def _async_reopen_panel_session(self) -> None:
         """Reauthenticate and replace the panel WebSocket session."""
