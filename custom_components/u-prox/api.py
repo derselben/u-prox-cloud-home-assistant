@@ -45,6 +45,7 @@ class UProxApi:
         self._session = async_get_clientsession(hass)
         self._login = login
         self._password = password
+        self.message_logger = message_logger
         self._authorization: str | None = None
         self._token_refresh_at: float | None = None
 
@@ -54,7 +55,6 @@ class UProxApi:
         if self._token_refresh_at is None:
             return None
         return max(0.0, self._token_refresh_at - time.monotonic())
-        self.message_logger = message_logger
 
     async def async_log_websocket_message(self, direction: str, message: Any) -> None:
         """Log one WebSocket application frame when logging is enabled."""
