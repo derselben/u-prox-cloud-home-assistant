@@ -1,0 +1,29 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to U-Prox Cloud",
+        "description": "Sign in with your U-Prox Cloud account.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      },
+      "panel": {
+        "title": "Select a hub",
+        "description": "Choose the hub to add to Home Assistant.",
+        "data": {
+          "panel_serial": "Hub"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The username or password was rejected.",
+      "cannot_connect": "Unable to connect to U-Prox Cloud.",
+      "no_panels": "No hubs are available for this account."
+    },
+    "abort": {
+      "already_configured": "This U-Prox server is already configured."
+    }
+  }
+}
