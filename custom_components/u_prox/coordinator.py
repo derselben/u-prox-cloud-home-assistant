@@ -45,7 +45,7 @@ class UProxCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             EVENT_HOMEASSISTANT_STOP, self._handle_homeassistant_stop
         )
         self._listener = self.hass.async_create_background_task(
-            self._async_listen(), "u-prox panel session"
+            self._async_listen(), "u_prox panel session"
         )
 
     async def async_close(self) -> None:

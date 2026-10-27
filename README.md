@@ -26,7 +26,7 @@ The integration is read-only: it opens a panel `Setup` session and sends the ses
 
 ### Manual
 
-Copy `custom_components/u-prox` into the `custom_components` directory under your Home Assistant configuration directory, then restart Home Assistant.
+Copy `custom_components/u_prox` into the `custom_components` directory under your Home Assistant configuration directory, then restart Home Assistant.
 
 ## Configuration
 
@@ -53,7 +53,7 @@ Each reported group also creates a read-only `alarm_control_panel` entity on the
 The **WebSocket message logging** switch is attached to the hub and is off by default. Turning it on also records a redacted snapshot of the current panel state. Subsequent incoming and outgoing WebSocket application messages are written as JSON Lines to:
 
 ```text
-custom_components/u-prox/websocket_messages.jsonl
+custom_components/u_prox/websocket_messages.jsonl
 ```
 
 The file rotates at 4 MiB, retaining one `.1` backup. Passwords, tokens, PINs, contact details, and other sensitive fields are redacted. Names and serials are replaced with consistent pseudonyms so messages remain correlatable. HTTP login and panel-list traffic, including authorization headers, is not logged. The log is excluded from Git; review it before sharing regardless.

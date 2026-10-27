@@ -1,5 +1,5 @@
 {
-  "domain": "u-prox",
+  "domain": "u_prox",
   "name": "U-Prox",
   "codeowners": [],
   "config_flow": true,
@@ -7,5 +7,5 @@
   "integration_type": "hub",
   "iot_class": "cloud_push",
   "requirements": [],
-  "version": "0.2.0"
+  "version": "0.2.1"
 }

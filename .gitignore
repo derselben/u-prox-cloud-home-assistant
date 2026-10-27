@@ -8,4 +8,5 @@ venv/
 .mypy_cache/
 .ruff_cache/
 *.log
-custom_components/u-prox/websocket_messages.jsonl*
+custom_components/u_prox/websocket_messages.jsonl*
+docs/
